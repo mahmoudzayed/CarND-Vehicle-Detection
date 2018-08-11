@@ -1,0 +1,11 @@
+
+__pycache__/helper.cpython-36.pyc
+*.png
+__pycache__/project_tests.cpython-36.pyc
+CarND-Semantic-Segmentation-master.zip
+CarND-Semantic-Segmentation-master/data/Testing_log.csv
+*.db
+*.csv
+*.zip
+examples/.DS_Store
+*.jpg
