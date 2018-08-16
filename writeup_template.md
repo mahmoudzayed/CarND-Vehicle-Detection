@@ -6,8 +6,8 @@
 **Vehicle Detection Project**
 
 [//]: # (Image References)
-[image1]: ./examples/video1_40_x.png
-[image2]: ./examples/video1_40_cars.png
+[image1]: ./example/video1_40_x.png
+[image2]: ./example/video1_40_cars.png
 
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/513/view) Points
