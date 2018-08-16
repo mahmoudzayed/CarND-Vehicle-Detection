@@ -15,14 +15,9 @@ The goals / steps of this project are the following:
 * Estimate a bounding box for vehicles detected.
 
 [//]: # (Image References)
-[image1]: ./examples/car_not_car.png
-[image2]: ./examples/HOG_example.jpg
-[image3]: ./examples/sliding_windows.jpg
-[image4]: ./examples/sliding_window.jpg
-[image5]: ./examples/bboxes_and_heat.png
-[image6]: ./examples/labels_map.png
-[image7]: ./examples/output_bboxes.png
-[video1]: ./project_video.mp4
+[image1]: ./examples/video1_40_x.png
+[image2]: ./examples/video1_40_cars.png
+
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/513/view) Points
 ### Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
@@ -34,75 +29,70 @@ The goals / steps of this project are the following:
 
 You're reading it!
 
-### Histogram of Oriented Gradients (HOG)
 
-#### 1. Explain how (and identify where in your code) you extracted HOG features from the training images.
+### Model Architecture and Training Strategy
 
-The code for this step is contained in the first code cell of the IPython notebook (or in lines # through # of the file called `some_file.py`).  
+#### 1. Solution Design Approach
 
-I started by reading in all the `vehicle` and `non-vehicle` images.  Here is an example of one of each of the `vehicle` and `non-vehicle` classes:
+The overall strategy for deriving a model architecture was to design a convolution neural network 
+
+My first step was to choose from several techniques in Semantic segmentation and i choose full convolution neural network model which is very popular in this kind of problem.
+ 
+In order to gauge how well the model was working, I used the normal and the segmanted images as a training set.I use very samll data set for training which cause overfitting.
+
+To combat the overfitting, I modified the model so that increase the depth of the model to reach 7 convolution layers then used after each intermediate convolution layer a normalization and a dropout layers. 
+
+This approach provided me with good enough model that can highlight cars and to overcome the having a huge size of network i preprocess the data and crop the input image to be as small as possible and the output layer as a gray scale image.
+
+The final step was to run the pipline to see how well the car was dedected on the road. There were a few spots where the vehicle fell off the track so to improve the dedection behavior in these cases, I increased training batches and learning rate.
+
+At the end of the process, the vehicles was dedected on the road.
+
+#### 2. Final Model Architecture
+
+The final model architecture (Car)Model.py lines 65-94) consisted of a convolution neural network with the following layers and layer sizes
+
+1- Convolution layer with filter size = 20, kernel_size= ( 5, 5) and same border mode
+2- Batch normalization then relu activation
+3- Convolution layer with filter size = 30, kernel_size= ( 5, 5) and same border mode
+4- Batch normalization then relu activation
+5- Convolution layer with filter size = 30, kernel_size= ( 5, 5) and same border mode
+6- Batch normalization then relu activation
+7- Convolution layer with filter size = 30, kernel_size= ( 5, 5) and same border mode
+8- Batch normalization then relu activation
+9- Convolution layer with filter size = 20, kernel_size= ( 5, 5) and same border mode
+10- Batch normalization then relu activation
+11- Convolution layer with filter size = 10, kernel_size= ( 5, 5) and same border mode
+12- Batch normalization then relu activation
+13- Convolution layer with filter size = 10, kernel_size= ( 5, 5) and same border mode
+14- L2 regularizer and relu activation
+15- compiled using loss Function 'mean_squared_error' and an adam optimizer
+
+#### 3. Creation of the Training Set & Training Process
+
+To capture good driving behavior,
+
+I first got the training data from Eric Lavigne on slacks.
+
+the data set contain of 14 images from the original video and processed to get the location of the car and its shape by highlighting it.
 
 ![alt text][image1]
-
-I then explored different color spaces and different `skimage.hog()` parameters (`orientations`, `pixels_per_cell`, and `cells_per_block`).  I grabbed random images from each of the two classes and displayed them to get a feel for what the `skimage.hog()` output looks like.
-
-Here is an example using the `YCrCb` color space and HOG parameters of `orientations=8`, `pixels_per_cell=(8, 8)` and `cells_per_block=(2, 2)`:
-
-
 ![alt text][image2]
 
-#### 2. Explain how you settled on your final choice of HOG parameters.
+### Pipeline (video)
 
-I tried various combinations of parameters and...
+#### 1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
 
-#### 3. Describe how (and identify where in your code) you trained a classifier using your selected HOG features (and color features if you used them).
-
-I trained a linear SVM using...
-
-### Sliding Window Search
-
-#### 1. Describe how (and identify where in your code) you implemented a sliding window search.  How did you decide what scales to search and how much to overlap windows?
-
-I decided to search random window positions at random scales all over the image and came up with this (ok just kidding I didn't actually ;):
-
-![alt text][image3]
-
-#### 2. Show some examples of test images to demonstrate how your pipeline is working.  What did you do to optimize the performance of your classifier?
-
-Ultimately I searched on two scales using YCrCb 3-channel HOG features plus spatially binned color and histograms of color in the feature vector, which provided a nice result.  Here are some example images:
-
-![alt text][image4]
----
-
-### Video Implementation
-
-#### 1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (somewhat wobbly or unstable bounding boxes are ok as long as you are identifying the vehicles most of the time with minimal false positives.)
 Here's a [link to my video result](./project_video.mp4)
-
-
-#### 2. Describe how (and identify where in your code) you implemented some kind of filter for false positives and some method for combining overlapping bounding boxes.
-
-I recorded the positions of positive detections in each frame of the video.  From the positive detections I created a heatmap and then thresholded that map to identify vehicle positions.  I then used `scipy.ndimage.measurements.label()` to identify individual blobs in the heatmap.  I then assumed each blob corresponded to a vehicle.  I constructed bounding boxes to cover the area of each blob detected.  
-
-Here's an example result showing the heatmap from a series of frames of video, the result of `scipy.ndimage.measurements.label()` and the bounding boxes then overlaid on the last frame of video:
-
-### Here are six frames and their corresponding heatmaps:
-
-![alt text][image5]
-
-### Here is the output of `scipy.ndimage.measurements.label()` on the integrated heatmap from all six frames:
-![alt text][image6]
-
-### Here the resulting bounding boxes are drawn onto the last frame in the series:
-![alt text][image7]
-
 
 
 ---
 
 ### Discussion
 
-#### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
+#### 1. Briefly discuss any problems / issues you faced in your implementation of this project.
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+I tried to use a gray scale image as an input to my FCN  but it gave vad results comparing to RGB images with the same parameter. I think that drop of perfomance is due to giving away almost all the usefull information considering color space.
+
+I think if i used larger data set i could cover more corner cases.
 
